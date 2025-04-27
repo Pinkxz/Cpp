@@ -25,7 +25,6 @@ class Person{
         int setVida(int vida);
         void adicionarItem(std::vector<Item*> Item);
         void removerItem(std::vector<Item*> Item);
-        void verInvetario(std::vector<Item*> Item);
         
 };
 

@@ -12,6 +12,7 @@ public:
     
     void interagir();
     void correr();
+    void verInvetario(std::vector<Item*> Item);
 };
 
 #endif
