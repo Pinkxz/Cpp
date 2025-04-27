@@ -12,7 +12,7 @@ class Person{
         std::vector<Item*> inventario;
     public:
         Person();
-        Person(std::string nome, int vida, int defesa);
+        Person(std::string nome, int vida, int defesa)  : nome(nome), vida(vida), defesa(defesa){}
         ~Person();
         bool estaVivo() const;
         void tomouDano(int dano);

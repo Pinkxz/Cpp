@@ -14,8 +14,7 @@ class Item {
         std::string getNome();
         void setID(int ID);
         void setNome(std::string Nome);
-        void usarItem();
-        void destruirItem(int usos);
+
 
 };
 
