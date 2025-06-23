@@ -3,30 +3,30 @@
 #include <vector>
 
 
-int lock = 0;
+int turn = 0;
 
 
 void critica1(std::vector<int>& v){
-    while(lock == 1);
-    lock = 1;
+    while(turn == 1);
     // Area critica 1
+    std::cout << "critico 1" << std::endl;
     for(int i = 0; i < 10000; i++){
         v.push_back(i);
     }
-    lock = 0;
+    turn = 1;
 
 }
 
 
 
 void critica2(std::vector<int>& v){
-    while(lock == 0);
+    while(turn == 0);
     // Area critica 2
-    lock = 0;
+    std::cout << "critico 2" << std::endl;
     for(int i = 0; i < 1000; i++){
         v.push_back(i);
     }
-    lock = 1;
+    turn = 0;
 }
 
 
