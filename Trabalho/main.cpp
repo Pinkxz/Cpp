@@ -4,11 +4,13 @@
 #include <vector>
 #include <mutex>
 #include <fstream>
+#include <atomic>
 
 
 std::vector<int> primos;
 std::mutex mutex;
-
+int primo = 2;
+std::atomic<bool> flag(false);
 
 // Verificando se o número é primo
 bool ePrimo(int n){
@@ -21,7 +23,7 @@ bool ePrimo(int n){
     return true;
 }
 
-
+// Auto-explicativo
 void salvarArquivo(int qtThreads, int tempo) {
 	std::ofstream arquivo;
 	arquivo.open("Arquivo_" + std::to_string(qtThreads) + ".txt");
@@ -33,6 +35,23 @@ void salvarArquivo(int qtThreads, int tempo) {
     }
     
 	arquivo.close();    
+}
+
+void multiThread(int total_primos) {
+    while (true) {
+        int numero;
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            if (flag) return;
+            if(primo == 2){
+                numero = primo++;
+            }else{
+                numero = primo;
+                primo += 2;
+            }
+        }
+
+    }
 }
 
 int main(){
