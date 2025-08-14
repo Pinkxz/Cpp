@@ -1,4 +1,4 @@
-// g++ main.cpp -o main.exe
+/* Comandos para execução em ./readme.md */
 #include <iostream>
 #include <thread>
 #include <vector>
@@ -44,12 +44,12 @@ void salvarArquivo(int qtThreads, double tempo) {
     arquivo.close();
 
     std::cout << "Threads: " << qtThreads << ".\n";
-    std::cout << "Tempo de execução: " << tempo << " segundos.\n";
+    std::cout << "Tempo de execucao: " << tempo << " segundos.\n";
 }
 
 int main() {
     int MThreads;
-    std::cout << "Quantos numeros primos deseja calcular?" << std::endl;
+    std::cout << "Quantos numeros primos deseja calcular? " << std::endl;
     std::cin >> total_primos;
 
     while (true) {
