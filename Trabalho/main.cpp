@@ -24,12 +24,13 @@ bool ePrimo(int n){
 }
 
 // Auto-explicativo
-void salvarArquivo(int qtThreads, int tempo) {
+void salvarArquivo(int qtThreads, double tempo) {
 	std::ofstream arquivo;
 	arquivo.open("Arquivo_" + std::to_string(qtThreads) + ".txt");
     arquivo << "Threads: " << qtThreads << "." << std::endl;
+    arquivo << "Tempo de execução: " << tempo << " segundos." << std::endl;
+    std::cout << "Threads: " << qtThreads << "." << std::endl;
     std::cout << "Tempo de execução: " << tempo << " segundos." << std::endl;
-
 	for(int p : primos){
         arquivo << p << "\n";
     }
@@ -37,9 +38,12 @@ void salvarArquivo(int qtThreads, int tempo) {
 	arquivo.close();    
 }
 
+
+
 void multiThread(int total_primos) {
     while (true) {
         int numero;
+
         {
             std::lock_guard<std::mutex> lock(mutex);
             if (flag) return;
@@ -51,6 +55,19 @@ void multiThread(int total_primos) {
             }
         }
 
+        // Testa se é primo
+        if (ePrimo(numero)) {
+            std::lock_guard<std::mutex> lock(mutex);
+            if ((int)primos.size() < total_primos) {
+                primos.push_back(numero);
+                if ((int)primos.size() == total_primos) {
+                    flag = true;
+                }
+            }
+        }
+
+        if (flag) return;
+    
     }
 }
 
@@ -66,18 +83,33 @@ int main(){
 
         if (MThreads == 0) break;
 
-        std::vector<std::thread> threads;
-        threads.reserve(MThreads);
+        primos.clear();
+        primo = 2;
+        flag = false;
+
+
 
         auto inicio = std::chrono::high_resolution_clock::now();
+
+            std::vector<std::thread> threads;
+            threads.reserve(MThreads);
+            for (int i = 0; i < MThreads; ++i) {
+                threads.emplace_back(multiThread, N);
+            }
         
-        for (size_t i = 0; i < N; i++){
-            ePrimo(N);
-        }
+            for (size_t i = 0; i < N; i++){
+                ePrimo(N);
+            }
+            
+            // Esperar todas terminarem
+            for (auto &t : threads) {
+                if (t.joinable()){ 
+                    t.join();
+                }
+            }
         
-        
-        auto fim = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> duracao = fim - inicio;
+            auto fim = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double> duracao = fim - inicio;
 
 
         salvarArquivo(MThreads, duracao.count());
