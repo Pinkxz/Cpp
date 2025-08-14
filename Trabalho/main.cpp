@@ -26,7 +26,7 @@ bool ePrimo(int n){
 // Auto-explicativo
 void salvarArquivo(int qtThreads, double tempo) {
 	std::ofstream arquivo;
-	arquivo.open("Arquivo_" + std::to_string(qtThreads) + ".txt");
+	arquivo.open("Arquivo_" + std::to_string(qtThreads) + "T.txt");
     arquivo << "Threads: " << qtThreads << "." << std::endl;
     arquivo << "Tempo de execução: " << tempo << " segundos." << std::endl;
     std::cout << "Threads: " << qtThreads << "." << std::endl;
@@ -97,10 +97,6 @@ int main(){
                 threads.emplace_back(multiThread, N);
             }
         
-            for (size_t i = 0; i < N; i++){
-                ePrimo(N);
-            }
-            
             // Esperar todas terminarem
             for (auto &t : threads) {
                 if (t.joinable()){ 
