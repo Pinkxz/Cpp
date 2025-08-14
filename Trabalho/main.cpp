@@ -2,6 +2,13 @@
 #include <iostream>
 #include <thread>
 #include <vector>
+#include <mutex>
+#include <fstream>
+
+
+std::vector<int> primos;
+std::mutex mutex;
+
 
 // Verificando se o número é primo
 bool ePrimo(int n){
@@ -14,6 +21,19 @@ bool ePrimo(int n){
     return true;
 }
 
+
+void salvarArquivo(int qtThreads, int tempo) {
+	std::ofstream arquivo;
+	arquivo.open("Arquivo_" + std::to_string(qtThreads) + ".txt");
+    arquivo << "Threads: " << qtThreads << "." << std::endl;
+    std::cout << "Tempo de execução: " << tempo << " segundos." << std::endl;
+
+	for(int p : primos){
+        arquivo << p << "\n";
+    }
+    
+	arquivo.close();    
+}
 
 int main(){
 
@@ -32,10 +52,18 @@ int main(){
 
         auto inicio = std::chrono::high_resolution_clock::now();
         
-
+        for (size_t i = 0; i < N; i++){
+            ePrimo(N);
+        }
+        
+        
         auto fim = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> duracao = fim - inicio;
 
+
+        salvarArquivo(MThreads, duracao.count());
     }
+    
+    std::cout << "Programa encerrado.";
     return 0;
 }   
