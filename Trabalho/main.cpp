@@ -11,6 +11,7 @@ std::vector<int> primos;
 std::mutex mutex;
 std::atomic<int> primo(3);
 int total_primos;
+int contador_arquivos = 0;
 
 bool ePrimo(int n){
     if (n <= 1) return false;
@@ -28,16 +29,16 @@ void multiThread() {
         if (ePrimo(numero)) {
             std::lock_guard<std::mutex> lock(mutex);
             primos.push_back(numero);
+            if ((int)primos.size() >= total_primos) {return;}
         }
-
-        if ((int)primos.size() >= total_primos * 2) return;
+        
     }
 }
 
 void salvarArquivo(int qtThreads, double tempo) {
     std::sort(primos.begin(), primos.end());
     primos.resize(total_primos);
-    std::ofstream arquivo("Arquivo_" + std::to_string(qtThreads) + "T.txt");
+    std::ofstream arquivo("resultado_" + std::to_string(contador_arquivos++) + ".txt");
     arquivo << "Threads: " << qtThreads << ".\n";
     arquivo << "Tempo de execução: " << tempo << " segundos.\n";
     for (int p : primos) arquivo << p << "\n";
@@ -45,6 +46,8 @@ void salvarArquivo(int qtThreads, double tempo) {
 
     std::cout << "Threads: " << qtThreads << ".\n";
     std::cout << "Tempo de execucao: " << tempo << " segundos.\n";
+    std::cout << "O resultado do processamento foi gravado em ./resultado_" 
+        << contador_arquivos-1 << ".txt" << std::endl;
 }
 
 int main() {
