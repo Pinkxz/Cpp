@@ -5,7 +5,6 @@
 
 int lock = 0;
 
-
 void critica1(std::vector<int>& v){
     while(lock == 1);
     lock = 1;
@@ -50,4 +49,4 @@ int main(){
 
 
     return 0;
-}
+}    

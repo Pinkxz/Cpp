@@ -7,7 +7,6 @@
 std::mutex mutex;
 
 
-
 void critica1(){
     mutex.lock();
     for(int i = 0; i < 10000; i++){
