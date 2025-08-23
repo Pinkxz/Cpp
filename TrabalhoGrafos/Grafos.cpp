@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <random>
 #include <fstream>
+#include <ctime>
 using namespace std;
 
 void generateGraphvizFile(const std::string& filename, const vector<vector<int>>& matrizC) {
@@ -31,7 +32,7 @@ void generateGraphvizFile(const std::string& filename, const vector<vector<int>>
 
 int main() {
     int vertices;
-
+    srand(time(NULL));
 
     cout << "Digite o número de vertices: ";
     cin >> vertices;
