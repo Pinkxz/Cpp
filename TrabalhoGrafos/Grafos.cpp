@@ -21,7 +21,6 @@ void generateGraphvizFile(const std::string& filename, const vector<vector<int>>
         }
     }
 
-    // desenhar os nós como círculos
     for (int i = 0; i < vertices; i++) {
         file << "  " << i << " [shape=circle];\n";
     }
