@@ -1,0 +1,51 @@
+#include <iostream>
+#include <thread>
+#include <vector>
+
+
+int turn = 0;
+
+
+void critica1(std::vector<int>& v){
+    while(turn == 1);
+    // Area critica 1
+    std::cout << "critico 1" << std::endl;
+    for(int i = 0; i < 10000; i++){
+        v.push_back(i);
+    }
+    turn = 1;
+
+}
+
+
+
+void critica2(std::vector<int>& v){
+    while(turn == 0);
+    // Area critica 2
+    std::cout << "critico 2" << std::endl;
+    for(int i = 0; i < 1000; i++){
+        v.push_back(i);
+    }
+    turn = 0;
+}
+
+
+// Main
+int main(){
+    std::vector<int> vetorCompartilhado;
+
+
+    std::thread t1(critica1,  std::ref(vetorCompartilhado));
+    std::thread t2(critica2,  std::ref(vetorCompartilhado));
+    t1.join();
+    t2.join();
+
+    std::cout << "Tamanho final do vetor: " << vetorCompartilhado.size() << std::endl;
+    std::cout.flush();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::cerr << "Terminou as threads\n";
+
+
+    return 0;
+}
