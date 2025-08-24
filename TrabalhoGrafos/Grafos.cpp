@@ -105,6 +105,14 @@ int main() {
     }
 
     generateGraphvizFile("graph.dot", matrizC);
+
+    int ret = system("dot -Tpng graph.dot -o graph.png");
+
+    if(ret == 0) {
+        cout << "Arquivo 'graph.png' gerado com sucesso!\n";
+    } else {
+        cout << "Erro ao gerar o arquivo PNG. Verifique se o Graphviz está instalado.\n";
+    }
     return 0;
 
 }
