@@ -1,50 +1,93 @@
 #include <iostream>
 #include <thread>
 #include <vector>
+#include <mutex>
 
+using namespace std;
 
-int turn = 0;
+class Semaforo{
+public:
+    int S;
+    mutex mtx;
 
-
-void critica1(std::vector<int>& v){
-    while(turn == 1);
-    // Area critica 1
-    std::cout << "critico 1" << std::endl;
-    for(int i = 0; i < 10000; i++){
-        v.push_back(i);
+    Semaforo(int valor){
+        S = valor;
     }
-    turn = 1;
+
+    void down(){
+        while (true){
+            mtx.lock();
+            if(S > 0){
+                S--;
+                mtx.unlock();
+                break;
+            }
+            mtx.unlock();
+            this_thread::sleep_for(chrono::milliseconds(20));
+        }
+    }
+
+    void up(){
+        mtx.lock();
+        S++;
+        mtx.unlock();
+    }
+};
+
+Semaforo sem(1);
+
+void critica1(vector<int>& v){
+    sem.down();
+    // Area critica 1
+    cout << "critico 1" << endl;
+    for(int i = 10; i < 20; i++){
+        v.push_back(i);
+        cout << i << endl;
+    }
+    sem.up();
 
 }
 
-
-
-void critica2(std::vector<int>& v){
-    while(turn == 0);
+void critica2(vector<int>& v){
     // Area critica 2
-    std::cout << "critico 2" << std::endl;
-    for(int i = 0; i < 1000; i++){
+    sem.down();
+    cout << "critico 2" << endl;
+    for(int i = 0; i < 10; i++){
         v.push_back(i);
+        cout << i << endl;
     }
-    turn = 0;
+    sem.up();
+}
+
+void critica3(vector<int>& v){
+    // Area critica 3
+    sem.down();
+    cout << "critico 3" << endl;
+    for(int i = 20; i < 30; i++){
+        v.push_back(i);
+        cout << i << endl;
+    }
+    sem.up();
 }
 
 
 // Main
 int main(){
-    std::vector<int> vetorCompartilhado;
+    vector<int> vetorCompartilhado;
 
 
-    std::thread t1(critica1,  std::ref(vetorCompartilhado));
-    std::thread t2(critica2,  std::ref(vetorCompartilhado));
+    thread t1(critica1,  ref(vetorCompartilhado));
+    thread t2(critica2,  ref(vetorCompartilhado));
+    thread t3(critica3,  ref(vetorCompartilhado));
     t1.join();
     t2.join();
+    t3.join();
+    
+    cout << "Tamanho final do vetor: " << vetorCompartilhado.size() << endl;
+    cout.flush();
 
-    std::cout << "Tamanho final do vetor: " << vetorCompartilhado.size() << std::endl;
-    std::cout.flush();
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    std::cerr << "Terminou as threads\n";
+    this_thread::sleep_for(chrono::milliseconds(100));
+    cerr << "Terminou as threads\n";
 
 
     return 0;
