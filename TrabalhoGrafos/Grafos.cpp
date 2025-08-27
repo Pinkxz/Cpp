@@ -54,13 +54,13 @@ int main() {
 
 
     // Função para gerar aleatoriamente (Só funciona até 10)
-    
+    /*
     for (int i = 0; i < vertices; i++) {
         for (int j = 0; j < vertices; j++) {
             matrizI[i][j] = 0;
         }
     }
-    /*
+    
     // Garante conexidade ligando cada vértice ao próximo
     for (int i = 0; i < vertices - 1; i++) {
         matrizI[i][i+1] = matrizI[i+1][i] = 1;
