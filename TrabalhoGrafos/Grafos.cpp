@@ -50,6 +50,32 @@ int main() {
 
         }
     }
+    
+
+
+    // Função para gerar aleatoriamente (Só funciona até 10)
+    
+    for (int i = 0; i < vertices; i++) {
+        for (int j = 0; j < vertices; j++) {
+            matrizI[i][j] = 0;
+        }
+    }
+    /*
+    // Garante conexidade ligando cada vértice ao próximo
+    for (int i = 0; i < vertices - 1; i++) {
+        matrizI[i][i+1] = matrizI[i+1][i] = 1;
+    }
+
+    int extraEdges = vertices; // pode ajustar quantidade
+    for (int k = 0; k < extraEdges; k++) {
+        int u = rand() % vertices;
+        int v = rand() % vertices;
+        if (u != v) {
+            matrizI[u][v] = matrizI[v][u] = 1;
+        }
+    }
+    */
+
 
     // Exibindo a matriz
     cout << "\nMatriz Incidencia:\n";
