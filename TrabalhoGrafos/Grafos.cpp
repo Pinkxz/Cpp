@@ -42,7 +42,7 @@ int main() {
     vector<vector<int>> matrizC(vertices, vector<int>(vertices));
 
     // Preenchendo a matriz
-    cout << "Digite os elementos da matriz:\n";
+    /* cout << "Digite os elementos da matriz:\n";
     for (int i = 0; i < vertices; i++) {
         for (int j = 0; j < vertices; j++) {
             cout << "Elemento [" << i << "][" << j << "]: ";
@@ -50,11 +50,10 @@ int main() {
 
         }
     }
-    
+    */
 
 
-    // Função para gerar aleatoriamente (Só funciona até 10)
-    /*
+    // For para gerar aleatoriamente (Só funciona até 40)
     for (int i = 0; i < vertices; i++) {
         for (int j = 0; j < vertices; j++) {
             matrizI[i][j] = 0;
@@ -74,7 +73,7 @@ int main() {
             matrizI[u][v] = matrizI[v][u] = 1;
         }
     }
-    */
+    
 
 
     // Exibindo a matriz
@@ -86,6 +85,7 @@ int main() {
         cout << endl;
     }
 
+    // Preenchendo matrizCusto aleatoriamente
     for (int i = 0; i < vertices; i++){
         for (int j = 0; j < vertices; j++){
             if(matrizI[i][j] == 0){
@@ -95,6 +95,8 @@ int main() {
             }
         }
     }
+
+    // Imprimindo matrizCusto
     cout << "\nMatriz Custo:\n";
     for (int i = 0; i < vertices; i++) {
         for (int j = 0; j < vertices; j++) {
