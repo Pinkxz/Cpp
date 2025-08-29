@@ -62,7 +62,7 @@ int main() {
     int vertices;
     srand(time(NULL));
 
-    cout << "Digite o número de vertices: ";
+    cout << "Digite o numero de vertices: ";
     cin >> vertices;
 
     vector<vector<int>> matrizAdj(vertices, vector<int>(vertices, 0));
@@ -70,6 +70,7 @@ int main() {
     vector<vector<int>> next(vertices, vector<int>(vertices, -1));
 
     // Inserir na mão
+    
     /*
     cout << "Digite os elementos da matriz de adjacencia:\n";
     for (int i = 0; i < vertices; i++) {
@@ -95,7 +96,8 @@ int main() {
         if (u != v) {
             matrizAdj[u][v] = matrizAdj[v][u] = 1;
         }
-    }
+    } 
+    
 
     cout << "\nMatriz Adjacencia:\n";
     for (int i = 0; i < vertices; i++) {
@@ -104,6 +106,7 @@ int main() {
         }
         cout << endl;
     }
+    
 
     // Preenche matriz de custos
     for (int i = 0; i < vertices; i++) {
@@ -148,11 +151,15 @@ int main() {
 
     // Usuário escolhe origem e destino
     int src, dst;
-    cout << "\nDigite o vértice de origem: ";
-    cin >> src;
-    cout << "Digite o vértice de destino: ";
-    cin >> dst;
+    do {
+        cout << "\nDigite o vertice de origem (0 a " << vertices-1 << "): ";
+        cin >> src;
+    } while(src < 0 || src >= vertices);
 
+    do {
+        cout << "Digite o vertice de destino (0 a " << vertices-1 << "): ";
+        cin >> dst;
+    } while(dst < 0 || dst >= vertices);
     vector<int> caminho = reconstruirCaminho(src, dst, next);
 
     if (caminho.empty()) {
