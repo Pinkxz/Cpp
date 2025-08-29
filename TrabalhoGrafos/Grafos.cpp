@@ -6,17 +6,35 @@
 #include <ctime>
 using namespace std;
 
-void generateGraphvizFile(const std::string& filename, const vector<vector<int>>& matrizC) {
-    std::ofstream file(filename);
-
+// Função para gerar arquivo DOT com o caminho destacado em vermelho
+void generateGraphvizFile(const std::string& filename, 
+                          const vector<vector<int>>& matrizC, 
+                          const vector<int>& caminho) {
+    ofstream file(filename);
     file << "graph G {\n";
     int vertices = matrizC.size();
 
+    // Guardar pares de arestas do caminho
+    vector<pair<int,int>> pathEdges;
+    for (int i = 0; i + 1 < (int)caminho.size(); i++) {
+        pathEdges.push_back({caminho[i], caminho[i+1]});
+    }
+
     for (int i = 0; i < vertices; i++) {
-        for (int j = i+1; j < vertices; j++) { // j > i evita duplicar
-            if (matrizC[i][j] < 100000) { // existe aresta
-                file << "  " << i << " -- " << j 
-                     << " [label=\"" << matrizC[i][j] << "\"];\n";
+        for (int j = i+1; j < vertices; j++) {
+            if (matrizC[i][j] < 100000) {
+                bool isPathEdge = false;
+                for (auto &p : pathEdges) {
+                    if ((p.first == i && p.second == j) || 
+                        (p.first == j && p.second == i)) {
+                        isPathEdge = true;
+                        break;
+                    }
+                }
+                file << "  " << i << " -- " << j
+                     << " [label=\"" << matrizC[i][j] << "\"";
+                if (isPathEdge) file << ", color=red, penwidth=2";
+                file << "];\n";
             }
         }
     }
@@ -29,6 +47,17 @@ void generateGraphvizFile(const std::string& filename, const vector<vector<int>>
     file.close();
 }
 
+// Reconstrói caminho mínimo usando matriz "next"
+vector<int> reconstruirCaminho(int u, int v, const vector<vector<int>>& next) {
+    if (next[u][v] == -1) return {};
+    vector<int> path = {u};
+    while (u != v) {
+        u = next[u][v];
+        path.push_back(u);
+    }
+    return path;
+}
+
 int main() {
     int vertices;
     srand(time(NULL));
@@ -36,67 +65,59 @@ int main() {
     cout << "Digite o número de vertices: ";
     cin >> vertices;
 
+    vector<vector<int>> matrizAdj(vertices, vector<int>(vertices, 0));
+    vector<vector<int>> matrizC(vertices, vector<int>(vertices, 100000));
+    vector<vector<int>> next(vertices, vector<int>(vertices, -1));
 
-    // Declarando uma matriz de inteiros com vetor de vetor
-    vector<vector<int>> matrizI(vertices, vector<int>(vertices));
-    vector<vector<int>> matrizC(vertices, vector<int>(vertices));
-
-    // Preenchendo a matriz
-    /* cout << "Digite os elementos da matriz:\n";
+    // Inserir na mão
+    /*
+    cout << "Digite os elementos da matriz de adjacencia:\n";
     for (int i = 0; i < vertices; i++) {
         for (int j = 0; j < vertices; j++) {
             cout << "Elemento [" << i << "][" << j << "]: ";
-            cin >> matrizI[i][j];
-
+            cin >> matrizAdj[i][j];
         }
     }
     */
 
-
-    // For para gerar aleatoriamente (Só funciona até 40)
-    for (int i = 0; i < vertices; i++) {
-        for (int j = 0; j < vertices; j++) {
-            matrizI[i][j] = 0;
-        }
-    }
     
+    // Gerar grafo aleatoriamente
     // Garante conexidade ligando cada vértice ao próximo
     for (int i = 0; i < vertices - 1; i++) {
-        matrizI[i][i+1] = matrizI[i+1][i] = 1;
+        matrizAdj[i][i+1] = matrizAdj[i+1][i] = 1;
     }
 
-    int extraEdges = vertices; // pode ajustar quantidade
+    // Adiciona arestas extras
+    int extraEdges = vertices; 
     for (int k = 0; k < extraEdges; k++) {
         int u = rand() % vertices;
         int v = rand() % vertices;
         if (u != v) {
-            matrizI[u][v] = matrizI[v][u] = 1;
+            matrizAdj[u][v] = matrizAdj[v][u] = 1;
         }
     }
-    
 
-
-    // Exibindo a matriz
-    cout << "\nMatriz Incidencia:\n";
+    cout << "\nMatriz Adjacencia:\n";
     for (int i = 0; i < vertices; i++) {
         for (int j = 0; j < vertices; j++) {
-            cout << matrizI[i][j] << "\t";
+            cout << matrizAdj[i][j] << "\t";
         }
         cout << endl;
     }
 
-    // Preenchendo matrizCusto aleatoriamente
-    for (int i = 0; i < vertices; i++){
-        for (int j = 0; j < vertices; j++){
-            if(matrizI[i][j] == 0){
-                matrizC[i][j] = 100000;
-            }else{
-                matrizC[i][j] = rand() % 5 + 1;
+    // Preenche matriz de custos
+    for (int i = 0; i < vertices; i++) {
+        for (int j = 0; j < vertices; j++) {
+            if (i == j) {
+                matrizC[i][j] = 0;
+                next[i][j] = i;
+            } else if (matrizAdj[i][j]) {
+                matrizC[i][j] = rand() % 5 + 1; // custo aleatório
+                next[i][j] = j;
             }
         }
     }
 
-    // Imprimindo matrizCusto
     cout << "\nMatriz Custo:\n";
     for (int i = 0; i < vertices; i++) {
         for (int j = 0; j < vertices; j++) {
@@ -105,20 +126,13 @@ int main() {
          cout << endl;
     }
 
-
     // Floyd-Warshall
     for(int k = 0; k < vertices; k++){
-     //   cout << "Loop K" << k << endl;
         for(int i = 0; i < vertices; i++){
-          //  cout << "Loop I" << i << endl;
             for(int j = 0; j < vertices; j++){
-           //     cout << "Loop J" << j << endl;
-           if(i == j){
-            continue;
-           }
-                if(matrizC[i][k] + matrizC[k][j] < matrizC[i][j]){
-            //       cout << "comparando" << endl;
+                if (matrizC[i][k] + matrizC[k][j] < matrizC[i][j]) {
                     matrizC[i][j] = matrizC[i][k] + matrizC[k][j];
+                    next[i][j] = next[i][k];
                 }
             }
         }
@@ -132,15 +146,36 @@ int main() {
         cout << endl;
     }
 
-    generateGraphvizFile("graph.dot", matrizC);
+    // Usuário escolhe origem e destino
+    int src, dst;
+    cout << "\nDigite o vértice de origem: ";
+    cin >> src;
+    cout << "Digite o vértice de destino: ";
+    cin >> dst;
+
+    vector<int> caminho = reconstruirCaminho(src, dst, next);
+
+    if (caminho.empty()) {
+        cout << "Nao existe caminho entre " << src << " e " << dst << endl;
+    } else {
+        cout << "Caminho minimo de " << src << " para " << dst << ": ";
+        for (int i = 0; i < (int)caminho.size(); i++) {
+            cout << caminho[i];
+            if (i != (int)caminho.size() - 1) cout << " -> ";
+        }
+        cout << "\nCusto total: " << matrizC[src][dst] << endl;
+    }
+
+    // Gera imagem com caminho destacado
+    generateGraphvizFile("graph.dot", matrizC, caminho);
 
     int ret = system("dot -Tpng graph.dot -o graph.png");
 
     if(ret == 0) {
-        cout << "Arquivo 'graph.png' gerado com sucesso!\n";
+        cout << "Arquivo 'graph.png' gerado com sucesso! Caminho destacado em vermelho.\n";
     } else {
         cout << "Erro ao gerar o arquivo PNG. Verifique se o Graphviz está instalado.\n";
     }
-    return 0;
 
+    return 0;
 }
